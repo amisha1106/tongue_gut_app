@@ -11,19 +11,25 @@ from datetime import datetime
 # ============================
 # 🔹 Load API keys and Firebase config from Streamlit Secrets
 # ============================
-gemini_key = st.secrets["GEMINI_API_KEY"]
 
+# Gemini API key
+gemini_key = st.secrets.get("GEMINI_API_KEY")
 if not gemini_key:
     st.error("❌ GEMINI_API_KEY not found in Streamlit secrets")
     st.stop()
 
-firebase_creds_dict = st.secrets["FIREBASE"]
+# Firebase credentials (make a mutable copy)
+firebase_creds_dict = dict(st.secrets.get("FIREBASE"))
 firebase_creds_dict["private_key"] = firebase_creds_dict["private_key"].replace("\\n", "\n")
 
-# Configure Gemini
+# ============================
+# 🔹 Configure Gemini
+# ============================
 genai.configure(api_key=gemini_key)
 
-# Initialize Firebase
+# ============================
+# 🔹 Initialize Firebase
+# ============================
 if not firebase_admin._apps:
     cred = credentials.Certificate(firebase_creds_dict)
     firebase_admin.initialize_app(cred, {
@@ -31,6 +37,7 @@ if not firebase_admin._apps:
     })
 
 bucket = storage.bucket()
+
 
 # ============================
 # 🌈 Streamlit UI Setup - Pinkish White Theme
@@ -214,3 +221,4 @@ else:
         <p style='color:#555;'>Your tongue analysis awaits... 😊</p>
     </div>
     """, unsafe_allow_html=True)
+
