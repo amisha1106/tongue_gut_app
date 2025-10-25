@@ -38,7 +38,6 @@ if not firebase_admin._apps:
 
 bucket = storage.bucket()
 
-
 # ============================
 # 🌈 Streamlit UI Setup - Pinkish White Theme
 # ============================
@@ -91,7 +90,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ============================
-# 📸 Upload + Crop
+# 📸 Upload + Crop + Validation + Analysis
 # ============================
 st.markdown("<br>", unsafe_allow_html=True)
 uploaded_file = st.file_uploader("📸 Upload your tongue image", type=["jpg","jpeg","png"])
@@ -111,6 +110,39 @@ if uploaded_file:
     analyze_button = st.button("🔍 Analyze My Gut Health (Let's Go!)")
 
     if analyze_button:
+        st.markdown("<h2 style='text-align:center; color:#d63384;'>🤖 Validating image... 👀</h2>", unsafe_allow_html=True)
+
+        with st.spinner("Checking if this image contains a tongue..."):
+            try:
+                verifier = genai.GenerativeModel("gemini-2.0-flash-exp")
+                verify_prompt = """
+                You are an image validator. Analyze the image and respond with ONLY one word:
+                - "yes" if the image clearly shows a human tongue,
+                - "no" if it shows a face, body, scenery, object, or anything else.
+
+                Do not explain. Just respond with 'yes' or 'no'.
+                """
+                verify_response = verifier.generate_content([verify_prompt, cropped_img])
+                verify_result = verify_response.text.strip().lower()
+
+                if "no" in verify_result:
+                    st.error("🚫 This image doesn’t seem to contain a tongue.")
+                    st.markdown("""
+                    <div style="background-color:#fff5f5; padding:15px; border-radius:10px; border:2px solid #ffb6c1;">
+                        <p style='color:#333;'>
+                        Please upload a <b>clear image of your tongue</b> only.<br>
+                        Avoid selfies, full-face photos, or other body parts.<br><br>
+                        📸 <i>Tip:</i> Stick out your tongue in good lighting and keep your mouth relaxed.
+                        </p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    st.stop()
+
+            except Exception as e:
+                st.warning(f"⚠️ Image validation failed: {str(e)}")
+                st.info("Proceeding cautiously... results may be less accurate.")
+
+        # ✅ Proceed only if it's a valid tongue image
         st.markdown("<h2 style='text-align:center; color:#d63384;'>🤖 Analyzing your tongue... 🧘‍♀️🧠</h2>", unsafe_allow_html=True)
 
         with st.spinner("Consulting the ancient AI of gut wisdom..."):
@@ -123,38 +155,33 @@ if uploaded_file:
                     Your output should include:
 
                     🩺 Tongue Category:
-                    Classify the tongue into one of: healthy, white, yellow, purple, deep red, unusual, or indigo violet. You may add a tiny playful comment like 'looking royal today!' or 'a little mysterious!'.
+                    Classify the tongue into one of: healthy, white, yellow, purple, deep red, unusual, or indigo violet. Add a small playful remark.
 
                     📊 Gut Score (0–100):
-                    Estimate a realistic gut health score (integer) based on the tongue's color, texture, and coating. Format it as "XX/100" and include a short, light-hearted sentence explaining why you gave that score. Example: "78/100 – Gut is decent, but it may be plotting a little rebellion!"
+                    Estimate a realistic gut health score with a fun short explanation.
 
                     💬 Tongue Talk – Color & Texture:
-                    Describe the tongue's appearance (color, coating, texture, cracks, moisture) in clear, simple language. Keep it friendly and maybe add a fun little observation, e.g., 'smooth like butter' or 'has some character'.
+                    Describe the tongue's color, coating, texture, cracks, and moisture briefly.
 
                     🌿 Gut Health Insights:
-                    Provide a brief, informative comment about the user's gut health with a sprinkle of humor. Example: "Your gut is generally behaving well, though it might be sneaking a cookie behind your back!"
+                    Offer a light, informative insight about gut health based on the tongue.
 
                     💡 Tips for a Healthier Gut & Tongue:
-                    Give 2–3 simple, safe, and practical suggestions to improve tongue and gut health (diet, hydration, lifestyle). You can add light humor like 'drink water like your plants are watching'.
+                    Give 2–3 safe and practical suggestions with mild humor.
 
-                    Formatting rules:
-                    - Use section headings with emojis as shown.
-                    - Keep paragraphs short (2–3 lines).
-                    - Be friendly, accurate, and encouraging.
-                    - Make it fun but not silly; avoid slang or negativity.
-                    - Avoid medical jargon that could confuse a normal reader.
-                    """
+                    Keep paragraphs short and friendly. Avoid medical jargon or negativity.
+                """
 
                 response = model.generate_content([prompt, cropped_img])
                 result_text = response.text
 
                 # Detect color category
-                categories = ["healthy","white","yellow","purple","deep red","deep_red","unusual","indigo violet","indigo_violet"]
+                categories = ["healthy", "white", "yellow", "purple", "deep red", "deep_red", "unusual", "indigo violet", "indigo_violet"]
                 predicted_category = "unclassified"
                 for c in categories:
-                    pattern = c.lower().replace("_","[ _-]")
+                    pattern = c.lower().replace("_", "[ _-]")
                     if re.search(f"\\b{pattern}\\b", result_text.lower()):
-                        predicted_category = c.replace(" ","_")
+                        predicted_category = c.replace(" ", "_")
                         break
 
                 # Extract Gut Score
@@ -167,14 +194,17 @@ if uploaded_file:
                     if match2:
                         gut_score = int(match2.group(1))
 
-                if gut_score and 0<=gut_score<=100:
-                    if gut_score>85: gut_level="🌟 Excellent Gut Vibes!"
-                    elif gut_score>60: gut_level="😎 Balanced but Room to Improve!"
-                    else: gut_level="⚠️ Gut May Need Some Love!"
+                if gut_score and 0 <= gut_score <= 100:
+                    if gut_score > 85:
+                        gut_level = "🌟 Excellent Gut Vibes!"
+                    elif gut_score > 60:
+                        gut_level = "😎 Balanced but Room to Improve!"
+                    else:
+                        gut_level = "⚠️ Gut May Need Some Love!"
                 else:
-                    gut_level="⚠️ Gut May Need Some Love!" if gut_score is None else gut_level
+                    gut_level = "⚠️ Gut May Need Some Love!" if gut_score is None else gut_level
 
-                # Upload to Firebase Storage
+                # ✅ Upload only valid images to Firebase
                 try:
                     img_bytes = io.BytesIO()
                     cropped_img.save(img_bytes, format="PNG")
@@ -184,7 +214,7 @@ if uploaded_file:
                     blob = bucket.blob(blob_path)
                     blob.upload_from_file(img_bytes, content_type="image/png")
                 except Exception as fb_error:
-                    print(f"Firebase upload error: {fb_error}")
+                    st.warning(f"⚠️ Firebase upload skipped: {fb_error}")
 
                 # Display Results
                 st.success("✅ Analysis Complete!")
@@ -204,8 +234,8 @@ if uploaded_file:
                 <div style="background-color:rgba(255,243,205,0.9); padding:20px; border-radius:12px; margin-top:25px; border:2px solid #ffc107;">
                     <h4 style='color:#d63384; margin-top:0;'>⚠️ Important Disclaimer</h4>
                     <p style='color:#1a1a1a; line-height:1.6;'>
-                        This is AI-powered for <b>educational purposes only</b>.
-                        Consult a qualified healthcare professional for any health concerns.
+                        This AI analysis is for <b>educational and wellness purposes only</b>.
+                        Please consult a healthcare professional for medical advice.
                     </p>
                 </div>
                 """, unsafe_allow_html=True)
@@ -221,4 +251,3 @@ else:
         <p style='color:#555;'>Your tongue analysis awaits... 😊</p>
     </div>
     """, unsafe_allow_html=True)
-
