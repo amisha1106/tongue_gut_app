@@ -143,7 +143,7 @@ if uploaded_file:
         resp1 = model.generate_content([main_prompt, cropped_img])
         text1 = resp1.text.strip()
 
-        # 🧹 Clean & Format AI Output for readability (stronger version)
+        # 🧹 Clean & Format AI Output for readability (final version)
         text1 = re.sub(r'(?i)(?<=Category)[:\-]?', ':', text1)
         text1 = re.sub(r'(?i)(?<=Confidence)[:\-]?', ':', text1)
         text1 = re.sub(r'(?i)(?<=Key Observations)[:\-]?', ':', text1)
@@ -151,18 +151,21 @@ if uploaded_file:
         text1 = re.sub(r'(?i)(?<=Insights)[:\-]?', ':', text1)
         text1 = re.sub(r'(?i)(?<=Tips)[:\-]?', ':', text1)
         
-        # Add line breaks before key fields
-        text1 = re.sub(r'(?i)\s*(Category:)', r'\n\n- \1', text1)
-        text1 = re.sub(r'(?i)\s*(Confidence:)', r'\n\n- \1', text1)
-        text1 = re.sub(r'(?i)\s*(Key Observations:)', r'\n\n- \1', text1)
-        text1 = re.sub(r'(?i)\s*(Gut Health Score:)', r'\n\n- \1', text1)
-        text1 = re.sub(r'(?i)\s*(Insights:)', r'\n\n- \1', text1)
-        text1 = re.sub(r'(?i)\s*(Tips:)', r'\n\n- \1', text1)
+        # 🧾 Insert line breaks before every major section
+        text1 = re.sub(r'(?i)\s*(Category:)', r'\n\n💮 \1', text1)
+        text1 = re.sub(r'(?i)\s*(Confidence:)', r'\n\n💮 \1', text1)
+        text1 = re.sub(r'(?i)\s*(Key Observations:)', r'\n\n💮 \1', text1)
+        text1 = re.sub(r'(?i)\s*(Gut Health Score:)', r'\n\n💮 \1', text1)
+        text1 = re.sub(r'(?i)\s*(Insights:)', r'\n\n💮 \1', text1)
+        text1 = re.sub(r'(?i)\s*(Tips:)', r'\n\n💮 \1', text1)
         
-        # Add bullets to numbered or listed tips
+        # 🪄 Add bullets for tips and numbered items
+        text1 = re.sub(r'(?i)\*\s*', r'\n• ', text1)
         text1 = re.sub(r'(?i)(\d+\.\s*)', r'\n• ', text1)
-        text1 = re.sub(r'(?<!\n)\s*-\s*', r'\n- ', text1)
+        
+        # Cleanup excessive line breaks
         text1 = re.sub(r'\n{3,}', '\n\n', text1).strip()
+
 
 
         # ---------- Stage 4: Extract values with improved regex ----------
@@ -312,4 +315,5 @@ if uploaded_file:
 
 else:
     st.info("👆 Upload a clear tongue image to start the analysis.")
+
 
