@@ -131,12 +131,12 @@ if uploaded_file:
         You are a professional AI tongue health analyst with a fun personality.
         Analyze this tongue image and respond EXACTLY in this format:
 
-        Category: [one of: healthy, white, yellow, purple, deep red, indigo violet, unusual]
-        Confidence: [number between 0-100]
-        Key Observations: [1-2 lines on color, coating, cracks, and moisture]
-        Gut Health Score: [number between 0-100]
-        Insights: [brief friendly message with light humor]
-        Tips: [2-3 short, witty suggestions - make them fun but helpful!]
+        -Category: [one of: healthy, white, yellow, purple, deep red, indigo violet, unusual]
+        -Confidence: [number between 0-100]
+        -Key Observations: [1-2 lines on color, coating, cracks, and moisture]
+        -Gut Health Score: [number between 0-100]
+        -Insights: [brief friendly message with light humor]
+        -Tips: [2-3 short, witty suggestions - make them fun but helpful!]
 
         Be consistent with the format and add personality to make it engaging!
         """
@@ -290,3 +290,4 @@ if uploaded_file:
 
 else:
     st.info("👆 Upload a clear tongue image to start the analysis.")
+
