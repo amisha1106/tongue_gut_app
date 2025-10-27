@@ -201,10 +201,10 @@ if uploaded_file:
             f"""
             <div style="background-color:rgba(255,240,245,0.95);padding:20px;border-radius:15px;border:3px solid #ffb6c1;">
             <h3 style='color:#d63384;'>🧠 Your Gut Health Report</h3>
-            <p><b>Category:</b> {cat.replace('_',' ').title()}</p>
-            <p><b>Confidence:</b> {conf_val}%</p>
-            <p><b>Gut Score:</b> {gut_score}/100</p>
-            <p><b>Status:</b> {gut_level}</p>
+            <p style='color:#000;'><b>Category:</b> {cat.replace('_',' ').title()}</p>
+            <p style='color:#000;'><b>Confidence:</b> {conf_val}%</p>
+            <p style='color:#000;'><b>Gut Score:</b> {gut_score}/100</p>
+            <p style='color:#000;'><b>Status:</b> {gut_level}</p>
             <hr>
             <div style='color:#333;'>{text1}</div>
             </div>
@@ -213,3 +213,4 @@ if uploaded_file:
         )
 else:
     st.info("👆 Upload a clear tongue image to start the analysis.")
+
