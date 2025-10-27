@@ -9,6 +9,23 @@ from streamlit_cropper import st_cropper
 from datetime import datetime
 
 # ============================
+# 🎨 Custom Background Styling
+# ============================
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background-color: #fff5f8;
+    }
+    .main {
+        background-color: #fff5f8;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# ============================
 # 🔹 Load API keys and Firebase config
 # ============================
 gemini_key = st.secrets.get("GEMINI_API_KEY")
