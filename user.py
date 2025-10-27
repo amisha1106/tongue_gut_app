@@ -143,6 +143,17 @@ if uploaded_file:
         resp1 = model.generate_content([main_prompt, cropped_img])
         text1 = resp1.text.strip()
 
+        # 🧹 Clean & Format AI Output for readability
+        text1 = re.sub(r'(?i)-\s*(category\s*:)', r'\n\n- \1', text1)
+        text1 = re.sub(r'(?i)-\s*(confidence\s*:)', r'\n\n- \1', text1)
+        text1 = re.sub(r'(?i)-\s*(key observations\s*:)', r'\n\n- \1', text1)
+        text1 = re.sub(r'(?i)-\s*(gut health score\s*:)', r'\n\n- \1', text1)
+        text1 = re.sub(r'(?i)-\s*(insights\s*:)', r'\n\n- \1', text1)
+        text1 = re.sub(r'(?i)-\s*(tips\s*:)', r'\n\n- \1', text1)
+        text1 = re.sub(r'(?<!\n)\s*-\s*', r'\n- ', text1)  # ensure bullets start on new lines
+        text1 = re.sub(r'\n{3,}', '\n\n', text1).strip()
+
+
         # ---------- Stage 4: Extract values with improved regex ----------
         # Extract confidence
         conf = re.search(r'(?:confidence|Confidence)[:\s]+(\d{1,3})', text1, re.IGNORECASE)
@@ -290,4 +301,5 @@ if uploaded_file:
 
 else:
     st.info("👆 Upload a clear tongue image to start the analysis.")
+
 
