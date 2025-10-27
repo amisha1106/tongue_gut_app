@@ -144,6 +144,7 @@ if uploaded_file:
         text1 = resp1.text.strip()
 
         # 🧹 Step 1: Standardize section headings
+        # 🧹 Step 1: Standardize section headings
         text1 = re.sub(r'(?i)(?<=Category)[:\-]?', ':', text1)
         text1 = re.sub(r'(?i)(?<=Confidence)[:\-]?', ':', text1)
         text1 = re.sub(r'(?i)(?<=Key Observations)[:\-]?', ':', text1)
@@ -159,19 +160,19 @@ if uploaded_file:
         text1 = re.sub(r'(?i)\s*(Insights:)', r'\n\n💡 \1', text1)
         text1 = re.sub(r'(?i)\s*(Tips:)', r'\n\n🌿 \1', text1)
         
-        # 🌿 Step 3: Format bullets cleanly (indent + remove duplicates)
-        text1 = re.sub(r'[\*•]+\s*', r'\n    • ', text1)        # normalize * or • to one bullet
-        text1 = re.sub(r'(\n\s*•\s*){2,}', r'\n    • ', text1)  # remove duplicates
-        text1 = re.sub(r'(?i)(\d+\.\s*)', r'\n    • ', text1)   # convert numbered list to bullet
-        text1 = re.sub(r'\n\s*•\s*:', r':', text1)              # clean cases like "• :"
-        text1 = re.sub(r'(\s*:\s*){2,}', ': ', text1)           # remove double colons
+        # 🌿 Step 3: Format bullets with indentation
+        text1 = re.sub(r'[\*•]+\s*', r'\n&nbsp;&nbsp;&nbsp;&nbsp;• ', text1)  # indent bullets
+        text1 = re.sub(r'(\n\s*•\s*){2,}', r'\n&nbsp;&nbsp;&nbsp;&nbsp;• ', text1)
+        text1 = re.sub(r'(?i)(\d+\.\s*)', r'\n&nbsp;&nbsp;&nbsp;&nbsp;• ', text1)
+        text1 = re.sub(r'\n\s*•\s*:', r':', text1)
+        text1 = re.sub(r'(\s*:\s*){2,}', ': ', text1)
         
-        # 🧾 Step 4: Remove any stray HTML tags
-        text1 = re.sub(r'</?div.*?>', '', text1)
-        text1 = re.sub(r'<.*?>', '', text1)
+        # 🧾 Step 4: Remove *all* stray HTML tags safely
+        text1 = re.sub(r'<[^>]+>', '', text1)  # removes any HTML like <div>, <br>, <p>, <span>, etc.
         
         # 🧼 Step 5: Final cleanup
         text1 = re.sub(r'\n{3,}', '\n\n', text1).strip()
+
 
 
         # ---------- Stage 4: Extract values with improved regex ----------
@@ -321,6 +322,7 @@ if uploaded_file:
 
 else:
     st.info("👆 Upload a clear tongue image to start the analysis.")
+
 
 
 
