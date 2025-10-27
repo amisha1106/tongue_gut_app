@@ -125,17 +125,17 @@ if uploaded_file:
         st.markdown("<h4 style='color:#d63384;'>🤖 Analyzing tongue features...</h4>", unsafe_allow_html=True)
 
         main_prompt = """
-        You are a professional AI tongue health analyst.
-        Analyze this tongue image and respond in a short structured format:
+        You are a professional AI tongue health analyst with a fun personality.
+        Analyze this tongue image and respond in a structured format with a touch of humor:
 
         - Category: one of [healthy, white, yellow, purple, deep red, indigo violet, unusual]
         - Confidence (0–100): how sure you are
         - Key Observations: 1–2 lines on color, coating, cracks, and moisture
         - Gut Health Score (0–100): numeric
-        - Insights: brief friendly message
-        - Tips: 2 short suggestions
+        - Insights: brief friendly message with light humor
+        - Tips: 2-3 short, witty suggestions (make them fun but helpful!)
 
-        Keep output concise and markdown-friendly.
+        Keep output concise, markdown-friendly, and add personality to make it engaging!
         """
         resp1 = model.generate_content([main_prompt, cropped_img])
         text1 = resp1.text.strip()
@@ -213,3 +213,4 @@ if uploaded_file:
         )
 else:
     st.info("👆 Upload a clear tongue image to start the analysis.")
+
