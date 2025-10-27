@@ -202,12 +202,17 @@ if uploaded_file:
         
         # 🧼 Step 5: Final cleanup
         text1 = re.sub(r'\n{3,}', '\n\n', text1).strip()
-
-        # 🚫 Step 6: Remove duplicate summary lines (since shown above)
+        
+        # 🚫 Step 6: Remove duplicate summary lines
         text1 = re.sub(r'🩺\s*Category:[^\n]*', '', text1)
         text1 = re.sub(r'🩺\s*Confidence:[^\n]*', '', text1)
         text1 = re.sub(r'🩺\s*Gut Health Score:[^\n]*', '', text1)
         text1 = re.sub(r'\n{2,}', '\n\n', text1).strip()
+        
+        # ✅ FINAL CLEANUP: remove stray HTML tags
+        text1 = re.sub(r'<\s*/?\s*(div|p|br|span|strong|em)[^>]*>', '', text1)
+        text1 = text1.strip()
+
 
         # ---------- Stage 4: Extract values with improved regex ----------
         # Extract confidence
@@ -356,6 +361,7 @@ if uploaded_file:
 
 else:
     st.info("👆 Upload a clear tongue image to start the analysis.")
+
 
 
 
