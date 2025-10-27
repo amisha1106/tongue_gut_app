@@ -151,25 +151,28 @@ if uploaded_file:
         text1 = re.sub(r'(?i)(?<=Insights)[:\-]?', ':', text1)
         text1 = re.sub(r'(?i)(?<=Tips)[:\-]?', ':', text1)
         
-        # ✨ Step 2: Insert clean line breaks with relevant emojis
+        # ✨ Step 2: Insert section headers with emojis
         text1 = re.sub(r'(?i)\s*(Category:)', r'\n\n🩺 \1', text1)
         text1 = re.sub(r'(?i)\s*(Confidence:)', r'\n\n🩺 \1', text1)
         text1 = re.sub(r'(?i)\s*(Key Observations:)', r'\n\n🩺 \1', text1)
         text1 = re.sub(r'(?i)\s*(Gut Health Score:)', r'\n\n🩺 \1', text1)
-        text1 = re.sub(r'(?i)\s*(Insights:)', r'\n\n🩺 \1', text1)
-        text1 = re.sub(r'(?i)\s*(Tips:)', r'\n\n🩺 \1', text1)
+        text1 = re.sub(r'(?i)\s*(Insights:)', r'\n\n💡 \1', text1)
+        text1 = re.sub(r'(?i)\s*(Tips:)', r'\n\n🌿 \1', text1)
         
-        # 🌿 Step 3: Clean and indent bullet points for Tips
-        # Remove extra symbols or repeated bullets
-        text1 = re.sub(r'[\*•]+\s*', r'\n    • ', text1)  # Replace * or • with one neat bullet
-        text1 = re.sub(r'(\n\s*•\s*){2,}', r'\n    • ', text1)  # Remove duplicate bullets
-        text1 = re.sub(r'(?i)(\d+\.\s*)', r'\n    • ', text1)  # Numbered lists → bullets
+        # 🌿 Step 3: Format bullets cleanly (indent + remove duplicates)
+        text1 = re.sub(r'[\*•]+\s*', r'\n    • ', text1)        # normalize * or • to one bullet
+        text1 = re.sub(r'(\n\s*•\s*){2,}', r'\n    • ', text1)  # remove duplicates
+        text1 = re.sub(r'(?i)(\d+\.\s*)', r'\n    • ', text1)   # convert numbered list to bullet
+        text1 = re.sub(r'\n\s*•\s*:', r':', text1)              # clean cases like "• :"
+        text1 = re.sub(r'(\s*:\s*){2,}', ': ', text1)           # remove double colons
         
-        # 🧾 Step 4: Clean up any HTML artifacts (if any slipped in)
+        # 🧾 Step 4: Remove any stray HTML tags
+        text1 = re.sub(r'</?div.*?>', '', text1)
         text1 = re.sub(r'<.*?>', '', text1)
         
-        # 🧼 Step 5: Final cleanup of excess line breaks
+        # 🧼 Step 5: Final cleanup
         text1 = re.sub(r'\n{3,}', '\n\n', text1).strip()
+
 
         # ---------- Stage 4: Extract values with improved regex ----------
         # Extract confidence
@@ -318,6 +321,7 @@ if uploaded_file:
 
 else:
     st.info("👆 Upload a clear tongue image to start the analysis.")
+
 
 
 
