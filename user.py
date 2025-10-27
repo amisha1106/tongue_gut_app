@@ -131,28 +131,17 @@ if uploaded_file:
         You are a professional AI tongue health analyst with a fun personality.
         Analyze this tongue image and respond EXACTLY in this format:
 
-        -Category: [one of: healthy, white, yellow, purple, deep red, indigo violet, unusual]
-        -Confidence: [number between 0-100]
-        -Key Observations: [1-2 lines on color, coating, cracks, and moisture]
-        -Gut Health Score: [number between 0-100]
-        -Insights: [brief friendly message with light humor]
-        -Tips: [2-3 short, witty suggestions - make them fun but helpful!]
+        Category: [one of: healthy, white, yellow, purple, deep red, indigo violet, unusual]
+        Confidence: [number between 0-100]
+        Key Observations: [1-2 lines on color, coating, cracks, and moisture]
+        Gut Health Score: [number between 0-100]
+        Insights: [brief friendly message with light humor]
+        Tips: [2-3 short, witty suggestions - make them fun but helpful!]
 
         Be consistent with the format and add personality to make it engaging!
         """
         resp1 = model.generate_content([main_prompt, cropped_img])
         text1 = resp1.text.strip()
-
-        # 🧹 Clean & Format AI Output for readability
-        text1 = re.sub(r'(?i)-\s*(category\s*:)', r'\n\n- \1', text1)
-        text1 = re.sub(r'(?i)-\s*(confidence\s*:)', r'\n\n- \1', text1)
-        text1 = re.sub(r'(?i)-\s*(key observations\s*:)', r'\n\n- \1', text1)
-        text1 = re.sub(r'(?i)-\s*(gut health score\s*:)', r'\n\n- \1', text1)
-        text1 = re.sub(r'(?i)-\s*(insights\s*:)', r'\n\n- \1', text1)
-        text1 = re.sub(r'(?i)-\s*(tips\s*:)', r'\n\n- \1', text1)
-        text1 = re.sub(r'(?<!\n)\s*-\s*', r'\n- ', text1)  # ensure bullets start on new lines
-        text1 = re.sub(r'\n{3,}', '\n\n', text1).strip()
-
 
         # ---------- Stage 4: Extract values with improved regex ----------
         # Extract confidence
@@ -301,5 +290,3 @@ if uploaded_file:
 
 else:
     st.info("👆 Upload a clear tongue image to start the analysis.")
-
-
