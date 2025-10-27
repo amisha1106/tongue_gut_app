@@ -27,21 +27,7 @@ if not firebase_admin._apps:
 
 bucket = storage.bucket()
 
-# ============================
-# 🌈 UI setup
-# ============================
-st.set_page_config(page_title="Gut & Tongue Analyzer", layout="centered", page_icon="👅")
-
-st.markdown("""
-<style>
-.stApp { background:linear-gradient(135deg,#fff0f5,#ffe4e9,#fff5f8,#ffeef4); }
-.stButton>button { background:linear-gradient(135deg,#ff9fb9,#ffb6c1); color:#fff; border:none; border-radius:12px; padding:0.7em 1.5em; font-weight:bold; }
-.stButton>button:hover { background:linear-gradient(135deg,#ff87a5,#ff99b9); transform:translateY(-2px); }
-</style>
-""", unsafe_allow_html=True)
-
-st.markdown("<h1 style='text-align:center;color:#d63384;'>👅 Gut-o-Meter</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align:center;'>Upload a clear tongue image to get your gut health score!</p>", unsafe_allow_html=True)
+st.markdown(""" <h1 style='text-align:center; color:#d63384; text-shadow: 1px 1px 2px rgba(255,255,255,0.5);'> 👅 Gut-o-Meter </h1> <p style='text-align:center; font-size:18px; color:#333; font-weight:500;'> Get your <b style='color:#d63384;'>Tongue Analysis</b> + a <b style='color:#d63384;'>Gut Health Score</b> 🧠✨ </p> """, unsafe_allow_html=True) st.markdown(""" <div style="background-color:#ffeef8; padding:20px; border-radius:12px; border:2px solid #ffd6e9; box-shadow: 0 2px 8px rgba(255,182,193,0.15);"> <h4 style='color:#d63384; margin-top:0;'>🧾 Quick Steps:</h4> <ol style="font-size:15px; color:#333; line-height:1.8;"> <li>📸 Upload a <b>clear image of your tongue</b> (avoid filters or edits).</li> <li>⏰ For best results, take the photo <b>in the morning before brushing, eating, or drinking</b>.</li> <li>✂️ Crop if needed (keep only the tongue area visible).</li> <li>🚀 Hit "Analyze My Gut Health" and let the AI work its magic!</li> </ol> </div> """, unsafe_allow_html=True)
 
 uploaded_file = st.file_uploader("📸 Upload your tongue image", type=["jpg","jpeg","png"])
 
@@ -175,3 +161,4 @@ if uploaded_file:
         """, unsafe_allow_html=True)
 else:
     st.info("👆 Upload a clear tongue image to start the analysis.")
+
