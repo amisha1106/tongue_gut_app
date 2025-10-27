@@ -68,9 +68,6 @@ st.markdown(
             <li>✂️ Crop if needed (keep only the tongue area visible).</li>
             <li>🚀 Hit "Analyze My Gut Health" and let the AI work its magic!</li>
         </ol>
-        <p style='text-align:center; font-size:14px; color:#d63384; margin-top:10px;'>
-        <b>💡 Pro Tip:</b> Challenge your friends to see who has the healthiest gut! 🏆
-        </p>
     </div>
     """,
     unsafe_allow_html=True
@@ -128,17 +125,17 @@ if uploaded_file:
         st.markdown("<h4 style='color:#d63384;'>🤖 Analyzing tongue features...</h4>", unsafe_allow_html=True)
 
         main_prompt = """
-        You are a professional AI tongue health analyst with a fun personality.
-        Analyze this tongue image and respond in a structured format with a touch of humor:
+        You are a professional AI tongue health analyst.
+        Analyze this tongue image and respond in a short structured format:
 
         - Category: one of [healthy, white, yellow, purple, deep red, indigo violet, unusual]
         - Confidence (0–100): how sure you are
         - Key Observations: 1–2 lines on color, coating, cracks, and moisture
         - Gut Health Score (0–100): numeric
-        - Insights: brief friendly message with light humor
-        - Tips: 2-3 short, witty suggestions (make them fun but helpful!)
+        - Insights: brief friendly message
+        - Tips: 2 short suggestions
 
-        Keep output concise, markdown-friendly, and add personality to make it engaging!
+        Keep output concise and markdown-friendly.
         """
         resp1 = model.generate_content([main_prompt, cropped_img])
         text1 = resp1.text.strip()
@@ -192,94 +189,27 @@ if uploaded_file:
         else:
             st.info("🧠 AI uncertain — image not stored for quality assurance.")
 
-        # ---------- Stage 6: Determine rank and badge ----------
-        if gut_score >= 90:
-            rank = "Gut Guru 🧘‍♀️"
-            badge = "🏆"
-            message = "You're basically a gut health superhero!"
-        elif gut_score >= 80:
-            rank = "Digestive Champion 💪"
-            badge = "🥇"
-            message = "Your gut game is strong! Keep it up!"
-        elif gut_score >= 70:
-            rank = "Gut Guardian 🛡️"
-            badge = "🥈"
-            message = "You're on the right track! A little more TLC needed."
-        elif gut_score >= 60:
-            rank = "Belly Buddy 🤝"
-            badge = "🥉"
-            message = "Your gut needs some extra love and care."
-        elif gut_score >= 50:
-            rank = "Tummy Trainee 📚"
-            badge = "🎖️"
-            message = "Time to level up your gut health game!"
-        else:
-            rank = "Gut Newbie 🌱"
-            badge = "⭐"
-            message = "Don't worry, every expert was once a beginner!"
-
+        # ---------- Stage 6: Display results ----------
         gut_level = (
             "🌟 Excellent Gut Vibes!"
             if gut_score > 85
             else ("😎 Balanced but Room to Improve!" if gut_score > 60 else "⚠️ Gut May Need Some Love!")
         )
 
-        # ---------- Stage 7: Display results with scorecard ----------
         st.success("✅ Analysis Complete!")
-        
-        col1, col2 = st.columns([2, 1])
-        
-        with col1:
-            st.markdown(
-                f"""
-                <div style="background-color:rgba(255,240,245,0.95);padding:20px;border-radius:15px;border:3px solid #ffb6c1;">
-                <h3 style='color:#d63384;'>🧠 Your Gut Health Report</h3>
-                <p style='color:#000;'><b>Category:</b> {cat.replace('_',' ').title()}</p>
-                <p style='color:#000;'><b>Confidence:</b> {conf_val}%</p>
-                <p style='color:#000;'><b>Gut Score:</b> {gut_score}/100</p>
-                <p style='color:#000;'><b>Status:</b> {gut_level}</p>
-                <hr>
-                <div style='color:#333;'>{text1}</div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-        
-        with col2:
-            st.markdown(
-                f"""
-                <div style="background-color:#fff0f6;padding:20px;border-radius:15px;border:3px solid #ffb6c1;text-align:center;">
-                <h2 style='color:#d63384; margin-top:0;'>🏅 Your Rank</h2>
-                <div style='font-size:60px; margin:10px 0;'>{badge}</div>
-                <h3 style='color:#d63384; margin:10px 0;'>{rank}</h3>
-                <p style='color:#333; font-size:14px;'>{message}</p>
-                <hr style='border:1px solid #ffd6e9;'>
-                <div style='background: linear-gradient(90deg, #d63384, #ff69b4); color:white; padding:10px; border-radius:8px; margin-top:15px;'>
-                <b style='font-size:24px;'>{gut_score}</b><br>
-                <span style='font-size:12px;'>POINTS</span>
-                </div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-        
-        # ---------- Stage 8: Share and compare section ----------
-        st.markdown("<br>", unsafe_allow_html=True)
         st.markdown(
             f"""
-            <div style="background-color:#ffeef8; padding:20px; border-radius:12px; border:2px solid #ffd6e9; text-align:center;">
-            <h4 style='color:#d63384; margin-top:0;'>🎯 Challenge Your Squad!</h4>
-            <p style='color:#333; font-size:15px;'>
-            You scored <b style='color:#d63384;'>{gut_score}/100</b>! 
-            Think your friends can beat that? Share this app and start a gut health competition! 🏆
-            </p>
-            <p style='color:#666; font-size:13px; margin-top:10px;'>
-            💡 <i>Pro tip: The person with the lowest score buys dinner... preferably something probiotic-rich! 😄</i>
-            </p>
+            <div style="background-color:rgba(255,240,245,0.95);padding:20px;border-radius:15px;border:3px solid #ffb6c1;">
+            <h3 style='color:#d63384;'>🧠 Your Gut Health Report</h3>
+            <p style='color:#000;'><b>Category:</b> {cat.replace('_',' ').title()}</p>
+            <p style='color:#000;'><b>Confidence:</b> {conf_val}%</p>
+            <p style='color:#000;'><b>Gut Score:</b> {gut_score}/100</p>
+            <p style='color:#000;'><b>Status:</b> {gut_level}</p>
+            <hr>
+            <div style='color:#333;'>{text1}</div>
             </div>
             """,
             unsafe_allow_html=True,
         )
-
 else:
     st.info("👆 Upload a clear tongue image to start the analysis.")
