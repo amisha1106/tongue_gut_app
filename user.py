@@ -143,7 +143,7 @@ if uploaded_file:
         resp1 = model.generate_content([main_prompt, cropped_img])
         text1 = resp1.text.strip()
 
-        # 🧹 Clean & Format AI Output for readability (health-themed version)
+        # 🧹 Step 1: Standardize section headings
         text1 = re.sub(r'(?i)(?<=Category)[:\-]?', ':', text1)
         text1 = re.sub(r'(?i)(?<=Confidence)[:\-]?', ':', text1)
         text1 = re.sub(r'(?i)(?<=Key Observations)[:\-]?', ':', text1)
@@ -151,7 +151,7 @@ if uploaded_file:
         text1 = re.sub(r'(?i)(?<=Insights)[:\-]?', ':', text1)
         text1 = re.sub(r'(?i)(?<=Tips)[:\-]?', ':', text1)
         
-        # ✨ Insert clear line breaks + relevant emoji headers
+        # ✨ Step 2: Insert clean line breaks with relevant emojis
         text1 = re.sub(r'(?i)\s*(Category:)', r'\n\n🩺 \1', text1)
         text1 = re.sub(r'(?i)\s*(Confidence:)', r'\n\n🩺 \1', text1)
         text1 = re.sub(r'(?i)\s*(Key Observations:)', r'\n\n🩺 \1', text1)
@@ -159,15 +159,17 @@ if uploaded_file:
         text1 = re.sub(r'(?i)\s*(Insights:)', r'\n\n🩺 \1', text1)
         text1 = re.sub(r'(?i)\s*(Tips:)', r'\n\n🩺 \1', text1)
         
-        # 🌿 Add bullets for Tips and indent them for clarity
-        text1 = re.sub(r'(?i)\*\s*', r'\n    • ', text1)
-        text1 = re.sub(r'(?i)(\d+\.\s*)', r'\n    • ', text1)
+        # 🌿 Step 3: Clean and indent bullet points for Tips
+        # Remove extra symbols or repeated bullets
+        text1 = re.sub(r'[\*•]+\s*', r'\n    • ', text1)  # Replace * or • with one neat bullet
+        text1 = re.sub(r'(\n\s*•\s*){2,}', r'\n    • ', text1)  # Remove duplicate bullets
+        text1 = re.sub(r'(?i)(\d+\.\s*)', r'\n    • ', text1)  # Numbered lists → bullets
         
-        # 🧾 Clean up excessive line breaks
+        # 🧾 Step 4: Clean up any HTML artifacts (if any slipped in)
+        text1 = re.sub(r'<.*?>', '', text1)
+        
+        # 🧼 Step 5: Final cleanup of excess line breaks
         text1 = re.sub(r'\n{3,}', '\n\n', text1).strip()
-
-
-
 
         # ---------- Stage 4: Extract values with improved regex ----------
         # Extract confidence
@@ -316,6 +318,7 @@ if uploaded_file:
 
 else:
     st.info("👆 Upload a clear tongue image to start the analysis.")
+
 
 
 
