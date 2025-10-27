@@ -27,13 +27,40 @@ if not firebase_admin._apps:
 
 bucket = storage.bucket()
 
-st.markdown(""" <h1 style='text-align:center; color:#d63384; text-shadow: 1px 1px 2px rgba(255,255,255,0.5);'> 👅 Gut-o-Meter </h1> <p style='text-align:center; font-size:18px; color:#333; font-weight:500;'> Get your <b style='color:#d63384;'>Tongue Analysis</b> + a <b style='color:#d63384;'>Gut Health Score</b> 🧠✨ </p> """, unsafe_allow_html=True) st.markdown(""" <div style="background-color:#ffeef8; padding:20px; border-radius:12px; border:2px solid #ffd6e9; box-shadow: 0 2px 8px rgba(255,182,193,0.15);"> <h4 style='color:#d63384; margin-top:0;'>🧾 Quick Steps:</h4> <ol style="font-size:15px; color:#333; line-height:1.8;"> <li>📸 Upload a <b>clear image of your tongue</b> (avoid filters or edits).</li> <li>⏰ For best results, take the photo <b>in the morning before brushing, eating, or drinking</b>.</li> <li>✂️ Crop if needed (keep only the tongue area visible).</li> <li>🚀 Hit "Analyze My Gut Health" and let the AI work its magic!</li> </ol> </div> """, unsafe_allow_html=True)
+# ============================
+# 🩷 App Header + Info Box
+# ============================
+st.markdown(
+    """ 
+    <h1 style='text-align:center; color:#d63384; text-shadow: 1px 1px 2px rgba(255,255,255,0.5);'> 👅 Gut-o-Meter </h1> 
+    <p style='text-align:center; font-size:18px; color:#333; font-weight:500;'> 
+    Get your <b style='color:#d63384;'>Tongue Analysis</b> + a <b style='color:#d63384;'>Gut Health Score</b> 🧠✨ 
+    </p> 
+    """,
+    unsafe_allow_html=True
+)
 
-uploaded_file = st.file_uploader("📸 Upload your tongue image", type=["jpg","jpeg","png"])
+st.markdown(
+    """ 
+    <div style="background-color:#ffeef8; padding:20px; border-radius:12px; border:2px solid #ffd6e9; 
+    box-shadow: 0 2px 8px rgba(255,182,193,0.15);">
+        <h4 style='color:#d63384; margin-top:0;'>🧾 Quick Steps:</h4>
+        <ol style="font-size:15px; color:#333; line-height:1.8;">
+            <li>📸 Upload a <b>clear image of your tongue</b> (avoid filters or edits).</li>
+            <li>⏰ For best results, take the photo <b>in the morning before brushing, eating, or drinking</b>.</li>
+            <li>✂️ Crop if needed (keep only the tongue area visible).</li>
+            <li>🚀 Hit "Analyze My Gut Health" and let the AI work its magic!</li>
+        </ol>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 # ============================
 # 📸 Upload + Crop
 # ============================
+uploaded_file = st.file_uploader("📸 Upload your tongue image", type=["jpg", "jpeg", "png"])
+
 if uploaded_file:
     image = Image.open(uploaded_file)
     st.image(image, caption="📂 Uploaded image", use_container_width=True)
@@ -104,7 +131,6 @@ if uploaded_file:
             refine_prompt = main_prompt + "\nYou seemed uncertain before. Re-analyze carefully and ensure consistency."
             resp2 = model.generate_content([refine_prompt, cropped_img])
             text2 = resp2.text.strip()
-            # Merge the higher confidence version
             conf2 = re.search(r'confidence[:\s]+(\d{1,3})', text2, re.IGNORECASE)
             conf_val2 = int(conf2.group(1)) if conf2 else 0
             if conf_val2 > conf_val:
@@ -112,7 +138,7 @@ if uploaded_file:
                 conf_val = conf_val2
 
         # ---------- Stage 4: Extract values ----------
-        categories = ["healthy","white","yellow","purple","deep red","indigo violet","unusual"]
+        categories = ["healthy", "white", "yellow", "purple", "deep red", "indigo violet", "unusual"]
         cat = "unclassified"
         for c in categories:
             if re.search(rf"\b{c}\b", text1.lower()):
@@ -121,10 +147,12 @@ if uploaded_file:
 
         gut_score = None
         m = re.search(r'(\d{1,3})\s*/\s*100', text1)
-        if m: gut_score = int(m.group(1))
+        if m:
+            gut_score = int(m.group(1))
         else:
             m2 = re.search(r'score[:\s]+(\d{1,3})', text1, re.IGNORECASE)
-            if m2: gut_score = int(m2.group(1))
+            if m2:
+                gut_score = int(m2.group(1))
 
         if gut_score is None or not (0 <= gut_score <= 100):
             gut_score = 60
@@ -145,20 +173,26 @@ if uploaded_file:
             st.info("🧠 AI uncertain — image not stored for quality assurance.")
 
         # ---------- Stage 6: Display results ----------
-        gut_level = "🌟 Excellent Gut Vibes!" if gut_score > 85 else ("😎 Balanced but Room to Improve!" if gut_score > 60 else "⚠️ Gut May Need Some Love!")
+        gut_level = (
+            "🌟 Excellent Gut Vibes!"
+            if gut_score > 85
+            else ("😎 Balanced but Room to Improve!" if gut_score > 60 else "⚠️ Gut May Need Some Love!")
+        )
 
         st.success("✅ Analysis Complete!")
-        st.markdown(f"""
-        <div style="background-color:rgba(255,240,245,0.95);padding:20px;border-radius:15px;border:3px solid #ffb6c1;">
-        <h3 style='color:#d63384;'>🧠 Your Gut Health Report</h3>
-        <p><b>Category:</b> {cat.replace('_',' ').title()}</p>
-        <p><b>Confidence:</b> {conf_val}%</p>
-        <p><b>Gut Score:</b> {gut_score}/100</p>
-        <p><b>Status:</b> {gut_level}</p>
-        <hr>
-        <div style='color:#333;'>{text1}</div>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown(
+            f"""
+            <div style="background-color:rgba(255,240,245,0.95);padding:20px;border-radius:15px;border:3px solid #ffb6c1;">
+            <h3 style='color:#d63384;'>🧠 Your Gut Health Report</h3>
+            <p><b>Category:</b> {cat.replace('_',' ').title()}</p>
+            <p><b>Confidence:</b> {conf_val}%</p>
+            <p><b>Gut Score:</b> {gut_score}/100</p>
+            <p><b>Status:</b> {gut_level}</p>
+            <hr>
+            <div style='color:#333;'>{text1}</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 else:
     st.info("👆 Upload a clear tongue image to start the analysis.")
-
