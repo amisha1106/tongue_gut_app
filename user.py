@@ -160,18 +160,40 @@ if uploaded_file:
         text1 = re.sub(r'(?i)\s*(Insights:)', r'\n\n💡 \1', text1)
         text1 = re.sub(r'(?i)\s*(Tips:)', r'\n\n🌿 \1', text1)
         
-        # 🌿 Step 3: Format bullets with indentation
-        text1 = re.sub(r'[\*•]+\s*', r'\n&nbsp;&nbsp;&nbsp;&nbsp;• ', text1)  # indent bullets
-        text1 = re.sub(r'(\n\s*•\s*){2,}', r'\n&nbsp;&nbsp;&nbsp;&nbsp;• ', text1)
-        text1 = re.sub(r'(?i)(\d+\.\s*)', r'\n&nbsp;&nbsp;&nbsp;&nbsp;• ', text1)
-        text1 = re.sub(r'\n\s*•\s*:', r':', text1)
-        text1 = re.sub(r'(\s*:\s*){2,}', ': ', text1)
+        # 🌿 Step 3: Format bullets cleanly (with indentation + context-based emojis)
+        def add_contextual_emoji(bullet_text):
+            """Add relevant emoji depending on keyword"""
+            t = bullet_text.lower()
+            if "tongue" in t or "brush" in t:
+                return f"    🪥 {bullet_text.strip()}"
+            elif "probiotic" in t or "gut" in t:
+                return f"    🧫 {bullet_text.strip()}"
+            elif "drink" in t or "water" in t or "hydrate" in t:
+                return f"    💧 {bullet_text.strip()}"
+            else:
+                return f"    🌸 {bullet_text.strip()}"
         
-        # 🧾 Step 4: Remove *all* stray HTML tags safely
-        text1 = re.sub(r'<[^>]+>', '', text1)  # removes any HTML like <div>, <br>, <p>, <span>, etc.
+        # normalize list markers first
+        text1 = re.sub(r'[\*•]+\s*', r'\n• ', text1)
+        text1 = re.sub(r'(?i)(\d+\.\s*)', r'\n• ', text1)
+        text1 = re.sub(r'(\n\s*•\s*){2,}', r'\n• ', text1)
+        
+        # split into lines and add indentation + emojis
+        lines = text1.split("\n")
+        formatted_lines = []
+        for line in lines:
+            if line.strip().startswith("•"):
+                formatted_lines.append(add_contextual_emoji(line.replace("•", "").strip()))
+            else:
+                formatted_lines.append(line)
+        text1 = "\n".join(formatted_lines)
+        
+        # 🧾 Step 4: Remove stray HTML safely
+        text1 = re.sub(r'<[^>]+>', '', text1)
         
         # 🧼 Step 5: Final cleanup
         text1 = re.sub(r'\n{3,}', '\n\n', text1).strip()
+
 
 
 
@@ -322,6 +344,7 @@ if uploaded_file:
 
 else:
     st.info("👆 Upload a clear tongue image to start the analysis.")
+
 
 
 
