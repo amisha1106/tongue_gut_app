@@ -209,13 +209,13 @@ if uploaded_file:
         text1 = re.sub(r'🩺\s*Gut Health Score:[^\n]*', '', text1)
         text1 = re.sub(r'\n{2,}', '\n\n', text1).strip()
         
-        # ✅ FINAL CLEANUP: aggressively remove all leftover HTML tags + invisible Unicode
-        text1 = re.sub(r'<[^>]*>', '', text1)  # remove any tag like <div>, </div>, <p>, etc.
+        # ✅ FINAL CLEANUP — fully remove any leftover HTML fragments or invisible chars
+        text1 = re.sub(r'</?div[^>]*>', '', text1, flags=re.IGNORECASE)  # remove all <div> or </div>
+        text1 = re.sub(r'<[^>]+>', '', text1)  # remove any other stray tags
         text1 = re.sub(r'&nbsp;|&lt;|&gt;|&amp;', '', text1)  # remove HTML entities
-        text1 = re.sub(r'[\u200b\u200c\u200d\uFEFF\xa0]', '', text1)  # remove invisible chars
+        text1 = re.sub(r'[\u200b\u200c\u200d\uFEFF\xa0]', '', text1)  # invisible Unicode
+        text1 = re.sub(r'\n\s*\n\s*\n+', '\n\n', text1)  # collapse large gaps
         text1 = text1.strip()
-
-
 
         # ---------- Stage 4: Extract values with improved regex ----------
         # Extract confidence
@@ -364,6 +364,7 @@ if uploaded_file:
 
 else:
     st.info("👆 Upload a clear tongue image to start the analysis.")
+
 
 
 
