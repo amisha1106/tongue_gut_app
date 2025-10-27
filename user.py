@@ -138,6 +138,8 @@ if uploaded_file:
         Insights: [brief friendly message with light humor]
         Tips: [2-3 short, witty suggestions - make them fun but helpful!]
 
+        **IMPORTANT: Use plain text only. Do NOT include any HTML tags, markdown code blocks, or special formatting.**
+        
         Be consistent with the format and add personality to make it engaging!
         """
         resp1 = model.generate_content([main_prompt, cropped_img])
@@ -364,6 +366,7 @@ if uploaded_file:
 
 else:
     st.info("👆 Upload a clear tongue image to start the analysis.")
+
 
 
 
